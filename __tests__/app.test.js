@@ -43,13 +43,12 @@ describe("201 POST /teams", () => {
       .post("/teams")
       .send({ id: 1 })
       .expect(201)
-      .then(({ body }) => {
-        console.log(body);
-        // expect(addedTeam).toMatchObject({
-        //   team_id: expect.any(Number),
-        //   name_id: 1,
-        //   score: 0,
-        // });
+      .then(({ body: { addedTeam } }) => {
+        expect(addedTeam).toMatchObject({
+          team_id: expect.any(Number),
+          name_id: 1,
+          score: 0,
+        });
       });
   });
   // todo("Can't post an existing teamname to the list of teams");
