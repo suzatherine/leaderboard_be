@@ -7,11 +7,23 @@ const {
 } = require("../models/app.model");
 
 exports.getAllTeamNames = (req, res, next) => {
-  return selectAllTeamNames()
+  const { used } = req.query;
+
+  const validUsed = ["true", "false"];
+  if (used !== undefined) {
+    if (!validUsed.includes(used)) {
+      return Promise.reject({ status: 400, msg: "Invalid used parameter" });
+    }
+  }
+
+  return selectAllTeamNames(used)
     .then((teamnames) => {
       res.status(200).send({ teamnames });
     })
-    .catch(next);
+    .catch((err) => {
+      console.log(err);
+      next(err);
+    });
 };
 
 exports.getAllTeams = (req, res, next) => {

@@ -9,10 +9,10 @@ module.exports = [
   },
   {
     name: "Cool team name 3",
-    used: false,
+    used: true,
   },
   {
     name: "Cool team name 4",
-    used: false,
+    used: true,
   },
 ];

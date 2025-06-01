@@ -26,6 +26,7 @@ describe("200 GET /teamnames", () => {
   test("200: returns all team names", () => {
     return request(app)
       .get("/teamnames")
+      .expect(200)
       .then(({ body: { teamnames } }) => {
         expect(teamnames.length).toBeGreaterThan(0);
         teamnames.forEach((teamName) => {
@@ -34,6 +35,37 @@ describe("200 GET /teamnames", () => {
             name: expect.any(String),
           });
         });
+      });
+  });
+  test("200: takes 'used' query and filters names accordingly when true", () => {
+    return request(app)
+      .get("/teamnames?used=true")
+      .expect(200)
+      .then(({ body: { teamnames } }) => {
+        expect(teamnames.length).toBe(2);
+        teamnames.forEach((teamname) => {
+          expect(teamname.used).toBe(true);
+        });
+      });
+  });
+  test("200: takes 'used' query and filters names accordingly when false", () => {
+    return request(app)
+      .get("/teamnames?used=false")
+      .expect(200)
+      .then(({ body: { teamnames } }) => {
+        expect(teamnames.length).toBe(2);
+        teamnames.forEach((teamname) => {
+          expect(teamname.used).toBe(false);
+        });
+      });
+  });
+
+  test("400: when invalid used query provided returns 400 bad request", () => {
+    return request(app)
+      .get("/teamnames?used=katherine")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Invalid used parameter");
       });
   });
 });

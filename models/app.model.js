@@ -1,9 +1,17 @@
 const db = require("../db/connection");
 
-exports.selectAllTeamNames = () => {
+exports.selectAllTeamNames = (used) => {
+  console.log(used, "used");
+  let usedClause = "";
+  if (used) {
+    usedClause = `WHERE used = ${used}`;
+  }
   return db
-    .query(`SELECT * FROM teamnames;`)
-    .then(({ rows: teamnames }) => teamnames);
+    .query(`SELECT * FROM teamnames ${usedClause};`)
+    .then(({ rows: teamnames }) => teamnames)
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.selectAllTeams = () => {
