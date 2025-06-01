@@ -7,7 +7,11 @@ const {
   customErrorCatcher,
   error500Catcher,
 } = require("./controllers/errors.controller");
-const { getAllTeamNames, postTeam } = require("./controllers/app.controller");
+const {
+  getAllTeamNames,
+  postTeam,
+  getAllTeams,
+} = require("./controllers/app.controller");
 
 const app = express();
 app.use(cors());
@@ -18,7 +22,7 @@ app.get("/api", (req, res) => {
 });
 
 app.get("/teamnames", getAllTeamNames);
-//app.get("/teams")
+app.get("/teams", getAllTeams);
 app.post("/teams", postTeam);
 
 app.use("/*splat", badPathCatcher);

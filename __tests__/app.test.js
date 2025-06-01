@@ -3,6 +3,7 @@ const testData = require("../db/data/test-data");
 const seed = require("../db/seeds/seed");
 const db = require("../db/connection");
 const app = require("../app");
+require("jest-sorted");
 
 // require("jest-sorted");
 
@@ -29,33 +30,80 @@ describe("200 GET /teamnames", () => {
         expect(teamnames.length).toBeGreaterThan(0);
         teamnames.forEach((teamName) => {
           expect(teamName).toMatchObject({
+            id: expect.any(Number),
             name: expect.any(String),
-            used: expect.any(Boolean),
           });
         });
       });
   });
 });
 
+describe("200 GET /teams", () => {
+  test("200: returns all teams, sorted by score ascending", () => {
+    return request(app)
+      .get("/teams")
+      .then(({ body: { teams } }) => {
+        expect(teams.length).toBeGreaterThan(0);
+        teams.forEach((team) => {
+          expect(team).toMatchObject({
+            name_id: expect.any(Number),
+            team_id: expect.any(Number),
+            team_name: expect.any(String),
+            score: expect.any(Number),
+          });
+        });
+        expect(teams).toBeSorted({ key: "score", descending: true });
+      });
+  });
+});
+
 describe("201 POST /teams", () => {
   test("201: add a team to the list of teams, ", () => {
+    const unusedNameId = 2;
     return request(app)
       .post("/teams")
-      .send({ id: 1 })
+      .send({ name_id: unusedNameId })
       .expect(201)
       .then(({ body: { addedTeam } }) => {
         expect(addedTeam).toMatchObject({
           team_id: expect.any(Number),
-          name_id: 1,
+          name_id: unusedNameId,
           score: 0,
         });
       });
   });
-  // todo("Can't post an existing teamname to the list of teams");
-  // todo("teamname is marked as used");
+
+  test("400: Can't post an existing teamname to the list of teams", () => {
+    return request(app)
+      .post("/teams")
+      .send({ name_id: 1 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("That teamname has been taken");
+      });
+  });
+
+  test("404: when provided with id for non-existant name_id", () => {
+    return request(app)
+      .post("/teams")
+      .send({ name_id: 1000 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No teamname exists with that id");
+      });
+  });
+  test("400: when provided with invalid name_id", () => {
+    return request(app)
+      .post("/teams")
+      .send({ name_id: "katherine" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
 });
 
-// an endpoint which patches the score of a team
+describe("PATCH /teams/team_id", () => {});
 
 describe("GET /api", () => {
   test("200: should return healthcheck message", () => {
