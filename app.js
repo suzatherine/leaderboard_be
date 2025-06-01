@@ -22,10 +22,10 @@ app.get("/api", (req, res) => {
   res.status(200).send({ msg: "Api connected successfully" });
 });
 
-app.get("/teamnames", getAllTeamNames);
-app.get("/teams", getAllTeams);
-app.post("/teams", postTeam);
-app.patch("/teams/:team_id", patchTeamScore);
+app.get("/api/teamnames", getAllTeamNames);
+app.get("/api/teams", getAllTeams);
+app.post("/api/teams", postTeam);
+app.patch("/api/teams/:team_id", patchTeamScore);
 
 app.use("/*splat", badPathCatcher);
 

@@ -25,7 +25,7 @@ describe("Non-existant path", () => {
 describe("200 GET /teamnames", () => {
   test("200: returns all team names", () => {
     return request(app)
-      .get("/teamnames")
+      .get("/api/teamnames")
       .expect(200)
       .then(({ body: { teamnames } }) => {
         expect(teamnames.length).toBeGreaterThan(0);
@@ -39,7 +39,7 @@ describe("200 GET /teamnames", () => {
   });
   test("200: takes 'used' query and filters names accordingly when true", () => {
     return request(app)
-      .get("/teamnames?used=true")
+      .get("/api/teamnames?used=true")
       .expect(200)
       .then(({ body: { teamnames } }) => {
         expect(teamnames.length).toBe(2);
@@ -50,7 +50,7 @@ describe("200 GET /teamnames", () => {
   });
   test("200: takes 'used' query and filters names accordingly when false", () => {
     return request(app)
-      .get("/teamnames?used=false")
+      .get("/api/teamnames?used=false")
       .expect(200)
       .then(({ body: { teamnames } }) => {
         expect(teamnames.length).toBe(2);
@@ -62,7 +62,7 @@ describe("200 GET /teamnames", () => {
 
   test("400: when invalid used query provided returns 400 bad request", () => {
     return request(app)
-      .get("/teamnames?used=katherine")
+      .get("/api/teamnames?used=katherine")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Invalid used parameter");
@@ -73,7 +73,7 @@ describe("200 GET /teamnames", () => {
 describe("200 GET /teams", () => {
   test("200: returns all teams, sorted by score ascending", () => {
     return request(app)
-      .get("/teams")
+      .get("/api/teams")
       .then(({ body: { teams } }) => {
         expect(teams.length).toBeGreaterThan(0);
         teams.forEach((team) => {
@@ -93,7 +93,7 @@ describe("201 POST /teams", () => {
   test("201: add a team to the list of teams, and sets the name's used property to true", () => {
     const unusedNameId = 2;
     return request(app)
-      .post("/teams")
+      .post("/api/teams")
       .send({ name_id: unusedNameId })
       .expect(201)
       .then(({ body: { addedTeam } }) => {
@@ -115,7 +115,7 @@ describe("201 POST /teams", () => {
 
   test("400: Can't post an existing teamname to the list of teams", () => {
     return request(app)
-      .post("/teams")
+      .post("/api/teams")
       .send({ name_id: 1 })
       .expect(400)
       .then(({ body: { msg } }) => {
@@ -125,7 +125,7 @@ describe("201 POST /teams", () => {
 
   test("404: when provided with id for non-existant name_id", () => {
     return request(app)
-      .post("/teams")
+      .post("/api/teams")
       .send({ name_id: 1000 })
       .expect(404)
       .then(({ body: { msg } }) => {
@@ -134,7 +134,7 @@ describe("201 POST /teams", () => {
   });
   test("400: when provided with invalid name_id", () => {
     return request(app)
-      .post("/teams")
+      .post("/api/teams")
       .send({ name_id: "katherine" })
       .expect(400)
       .then(({ body: { msg } }) => {
@@ -144,7 +144,7 @@ describe("201 POST /teams", () => {
 
   test("400: when provided body with missing properties", () => {
     return request(app)
-      .post("/teams")
+      .post("/api/teams")
       .send({})
       .expect(400)
       .then(({ body: { msg } }) => {
@@ -156,7 +156,7 @@ describe("201 POST /teams", () => {
 describe("PATCH /teams/:team_id", () => {
   test("201: should return team with score updated by provided increment", () => {
     return request(app)
-      .patch("/teams/1")
+      .patch("/api/teams/1")
       .send({ score_increment: 1000 })
       .expect(201)
       .then(({ body: { updatedTeam } }) => {
@@ -165,7 +165,7 @@ describe("PATCH /teams/:team_id", () => {
   });
   test("400: return 400 bad request when invalid id provided", () => {
     return request(app)
-      .patch("/teams/katherine")
+      .patch("/api/teams/katherine")
       .send({ score_increment: 1000 })
       .expect(400)
       .then(({ body: { msg } }) => {
@@ -174,7 +174,7 @@ describe("PATCH /teams/:team_id", () => {
   });
   test("404: return 404 if valid but non-existent team id provided", () => {
     return request(app)
-      .patch("/teams/3000")
+      .patch("/api/teams/3000")
       .send({ score_increment: 1000 })
       .expect(404)
       .then(({ body: { msg } }) => {
@@ -184,7 +184,7 @@ describe("PATCH /teams/:team_id", () => {
 
   test("400: returns 400 when required keys not provided", () => {
     return request(app)
-      .patch("/teams/3000")
+      .patch("/api/teams/3000")
       .send({})
       .expect(400)
       .then(({ body: { msg } }) => {

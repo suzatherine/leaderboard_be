@@ -20,10 +20,7 @@ exports.getAllTeamNames = (req, res, next) => {
     .then((teamnames) => {
       res.status(200).send({ teamnames });
     })
-    .catch((err) => {
-      console.log(err);
-      next(err);
-    });
+    .catch(next);
 };
 
 exports.getAllTeams = (req, res, next) => {
