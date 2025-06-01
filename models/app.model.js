@@ -1,3 +1,4 @@
+const e = require("express");
 const db = require("../db/connection");
 
 exports.selectAllTeamNames = () => {
@@ -46,6 +47,29 @@ exports.checkTeamDoesNotExistWithName = (teamNameId) => {
           status: 400,
           msg: "That teamname has been taken",
         });
+      }
+    });
+};
+
+exports.updateTeamScore = (team_id, score_increment) => {
+  return db
+    .query(
+      `
+    UPDATE teams
+    SET score = score + $1
+    WHERE team_id = $2
+    RETURNING *;
+    `,
+      [score_increment, team_id]
+    )
+    .then(({ rows }) => {
+      if (rows.length === 0) {
+        return Promise.reject({
+          status: 404,
+          msg: "No teams exist with that id",
+        });
+      } else {
+        return rows[0];
       }
     });
 };

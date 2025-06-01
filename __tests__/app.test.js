@@ -101,9 +101,50 @@ describe("201 POST /teams", () => {
         expect(msg).toBe("Bad request");
       });
   });
+
+  test("400: when provided body with missing properties", () => {
+    return request(app)
+      .post("/teams")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
 });
 
-describe("PATCH /teams/team_id", () => {});
+describe("PATCH /teams/:team_id", () => {
+  test("201: should return team with score updated by provided increment", () => {
+    return request(app)
+      .patch("/teams/1")
+      .send({ score_increment: 1000 })
+      .expect(201)
+      .then(({ body: { updatedTeam } }) => {
+        expect(updatedTeam.score).toBeGreaterThan(1000);
+      });
+  });
+  test("400: return 400 bad request when invalid id provided", () => {
+    return request(app)
+      .patch("/teams/katherine")
+      .send({ score_increment: 1000 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("404: return 404 if valid but non-existent team id provided", () => {
+    return request(app)
+      .patch("/teams/3000")
+      .send({ score_increment: 1000 })
+      .expect(404)
+      .then(({ body: response }) => {
+        console.log(response);
+        // expect(msg).toBe("No team exists with that id");
+      });
+  });
+
+  // 400 nonexistant keys
+});
 
 describe("GET /api", () => {
   test("200: should return healthcheck message", () => {

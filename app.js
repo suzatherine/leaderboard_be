@@ -11,6 +11,7 @@ const {
   getAllTeamNames,
   postTeam,
   getAllTeams,
+  patchTeamScore,
 } = require("./controllers/app.controller");
 
 const app = express();
@@ -24,6 +25,7 @@ app.get("/api", (req, res) => {
 app.get("/teamnames", getAllTeamNames);
 app.get("/teams", getAllTeams);
 app.post("/teams", postTeam);
+app.patch("/teams/:team_id", patchTeamScore);
 
 app.use("/*splat", badPathCatcher);
 
