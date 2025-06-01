@@ -58,7 +58,7 @@ describe("200 GET /teams", () => {
 });
 
 describe("201 POST /teams", () => {
-  test("201: add a team to the list of teams, ", () => {
+  test("201: add a team to the list of teams, and sets the name's used property to true", () => {
     const unusedNameId = 2;
     return request(app)
       .post("/teams")
@@ -70,6 +70,14 @@ describe("201 POST /teams", () => {
           name_id: unusedNameId,
           score: 0,
         });
+      })
+      .then(() => {
+        return db
+          .query(`SELECT * FROM teamnames WHERE id=${unusedNameId}`)
+          .then(({ rows }) => {
+            const updatedTeam = rows[0];
+            expect(updatedTeam.used).toBe(true);
+          });
       });
   });
 
@@ -137,13 +145,20 @@ describe("PATCH /teams/:team_id", () => {
       .patch("/teams/3000")
       .send({ score_increment: 1000 })
       .expect(404)
-      .then(({ body: response }) => {
-        console.log(response);
-        // expect(msg).toBe("No team exists with that id");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("No teams exist with that id");
       });
   });
 
-  // 400 nonexistant keys
+  test("400: returns 400 when required keys not provided", () => {
+    return request(app)
+      .patch("/teams/3000")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("GET /api", () => {

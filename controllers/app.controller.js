@@ -40,6 +40,9 @@ exports.postTeam = (req, res, next) => {
 exports.patchTeamScore = (req, res, next) => {
   const { team_id } = req.params;
   const { score_increment } = req.body;
+  if (!score_increment) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
 
   return updateTeamScore(team_id, score_increment)
     .then((updatedTeam) => {

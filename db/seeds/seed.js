@@ -11,7 +11,8 @@ const seed = ({ teamnames, teams }) => {
       return db.query(`
     CREATE TABLE teamnames (
       id SERIAL PRIMARY KEY,
-      name VARCHAR
+      name VARCHAR,
+      used BOOLEAN
     );`);
     })
     .then(() => {
@@ -25,12 +26,12 @@ const seed = ({ teamnames, teams }) => {
     .then(() => {
       const teamNamesCopy = structuredClone(teamnames);
       const formattedTeamNamesCopy = teamNamesCopy.map((teamName) => {
-        return [teamName.name];
+        return [teamName.name, teamName.used];
       });
       const insertTeamNamesQuery = format(
         `
       INSERT INTO teamnames
-      (name)
+      (name, used)
       VALUES
       %L
       `,
@@ -39,20 +40,22 @@ const seed = ({ teamnames, teams }) => {
       return db.query(insertTeamNamesQuery);
     })
     .then(() => {
-      const teamsCopy = structuredClone(teams);
-      const formattedTeamsCopy = teamsCopy.map((team) => {
-        return [team.name_id, team.score];
-      });
-      const insertTeamsQuery = format(
-        `
+      if (teams.length > 0) {
+        const teamsCopy = structuredClone(teams);
+        const formattedTeamsCopy = teamsCopy.map((team) => {
+          return [team.name_id, team.score];
+        });
+        const insertTeamsQuery = format(
+          `
       INSERT INTO teams
       (name_id, score)
       VALUES
       %L
       `,
-        formattedTeamsCopy
-      );
-      return db.query(insertTeamsQuery);
+          formattedTeamsCopy
+        );
+        return db.query(insertTeamsQuery);
+      }
     });
 };
 

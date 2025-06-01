@@ -22,19 +22,31 @@ exports.selectAllTeams = () => {
 };
 
 exports.addTeam = (teamnameId) => {
-  return db
-    .query(
-      `
+  const insertTeamPromise = db.query(
+    `
     INSERT INTO teams
     (name_id)  
     VALUES
     ($1)
     RETURNING *;`,
-      [teamnameId]
-    )
-    .then(({ rows: [addedTeam] }) => {
+    [teamnameId]
+  );
+  const updateTeamNameTablePromise = db.query(
+    `
+    UPDATE teamnames
+    SET used = true
+    WHERE id = $1
+    RETURNING *;
+        `,
+    [teamnameId]
+  );
+  return Promise.all([insertTeamPromise, updateTeamNameTablePromise]).then(
+    ([insertTeamResponse]) => {
+      const { rows } = insertTeamResponse;
+      const addedTeam = rows[0];
       return addedTeam;
-    });
+    }
+  );
 };
 
 exports.checkTeamDoesNotExistWithName = (teamNameId) => {
