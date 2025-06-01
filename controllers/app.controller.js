@@ -1,7 +1,7 @@
 const {
   selectAllTeamNames,
   addTeam,
-  checkTeamDoesNotExistsWithName,
+  checkTeamDoesNotExistWithName,
   selectAllTeams,
 } = require("../models/app.model");
 
@@ -23,7 +23,7 @@ exports.getAllTeams = (req, res, next) => {
 
 exports.postTeam = (req, res, next) => {
   const { name_id } = req.body;
-  return checkTeamDoesNotExistsWithName(name_id)
+  return checkTeamDoesNotExistWithName(name_id)
     .then(() => {
       return addTeam(name_id);
     })

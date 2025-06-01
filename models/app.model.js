@@ -37,7 +37,7 @@ exports.addTeam = (teamnameId) => {
     });
 };
 
-exports.checkTeamDoesNotExistsWithName = (teamNameId) => {
+exports.checkTeamDoesNotExistWithName = (teamNameId) => {
   return db
     .query(`SELECT * FROM teams WHERE name_id = $1`, [teamNameId])
     .then(({ rows }) => {
